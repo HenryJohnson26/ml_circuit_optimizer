@@ -5,3 +5,5 @@ networkx
 pyzx
 qiskit
 qiskit_qasm3_import
+torch
+pathlib

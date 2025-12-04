@@ -31,7 +31,7 @@ def tokenize_pair(raw_qasm_path, opt_qasm_path, outpath_prefix):
         "opt_ints": opt_ints,
         "n_qubits": raw_qc.num_qubits
     }
-    with open(outpath_prefix + ".json", "w") as f:
+    with open(outpath_prefix, "w") as f:
         json.dump(payload, f, default=str)
     return payload
 
