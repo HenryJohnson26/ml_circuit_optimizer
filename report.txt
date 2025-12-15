@@ -1,0 +1,54 @@
+Probelm statement:
+In order to achieve large scale fault tolerant quantum computers, we need to have accurate
+simulations of intermediate scale quantum devices for purposes of validation and education.
+One of the most promising ways of doing this is by using a stabilizer rank decomposition.
+Despite its advantages stabilizer rank decomposition simulators are still NP problems and
+require careful optimization. One area of research is in circuit optimization. Smaller
+circuits with fewer and further back non-clifford gates is what they aim for and what I aimed
+to accomplish in this project.
+
+Solution:
+My project created a novel dataset using random circuit sampling, used modern circuit
+optimizers and created differentiable heuristic penalties for non-clifford density and
+quantum state integrity. Then a Convolutional Neural Network (CNN) was trained using pytorch
+resulting in a Machine Learning (ML) circuit optimizer for better stabilizer-based simulation.
+Using this tool, researchers may be able to simulate a larger number of qubits!
+
+Assumptions Constraints and Implications:
+The assumption that I am making is that for large qubit simulation applications, multiple passes
+throught the optimizer would need to be made since it is tuned for 4 qubits due to simulation
+restrictions during model training. This is also the larges constraint on the model. In order to
+achieve the quantum state integrity a simulation had to be made (in pytorch to be differentiable)
+which slowed down learning significantly and more qubits could not be simulated because of this.
+The implication would be that more qubits could be simulated given multiple passes through the
+optimizer which is what would allow for larger simulation beyond whats been done before. The
+result is also that this model does not have perfect state integrity. Longer training would be
+required for better state integrity as the model did not fully converge but I don't have access
+to the resources required for that. I trained for a full day on my laptop and got satisfactory
+results according to my origional statement but for research applications more training should
+be done.
+
+How this was built:
+In src there are files for random circuit generation, qiskit optimization and tokenization.
+Random circuit generation was done by initializing a set of gates that can be selected, then
+using a random integer with weighted probability, it generates a random sequence of gates. Then
+by using sequences of qiskit passes, it uses pre-written optimizers to do some optimization of
+the circuit (qiskit is a package written by IBM that is a full quantum simulator and also has
+some optimization functions). Once a circuit has been optimized with qiskit, it tokenizes gates
+so that it can be trained on. Raw, unoptimized circuits are used as input features and qiskit
+optimized circuits are used as labels. To generate training sets I use a series of scripts in
+the scripts directory. I run gen_circuits.py optimize_circuits.py and tokenize_circuits.py.
+To make this easier I used a bash script called make_dataset.sh. The data is written into a
+.json form and then read by cnn.py which is in the src directory. cnn.py is where the largest
+amount of work has gone into. It contains the data splitting, the model construction and all
+of the loss functions. The most challenging aspect was the state fidelity penalty, it works by
+defining a set of quantum gates in pytorch and simulating on a small qubit state using those
+gates. Being written in pytorch is what allows it to be differentiable by the model so that
+weights can be adjusted using the penalty. It also contains a cluster penalty that evaluates
+how many non-clifford gates are in a window and guides the model towards reducing the number
+of non-clifford gates. Finally it is trained in batches using a dataloader, penalties are
+calculated, backpropogation occurs and we loop for each epoch.
+
+Summary:
+A model is created from this which tires to maximize the quantum state fidelity while minimizing
+the number of non-clifford gates. We then can run and test the model on unseen circuits.

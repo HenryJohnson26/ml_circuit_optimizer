@@ -20,4 +20,4 @@ def generate_and_save(n_samples=100, n_qubits=4, depth=40, non_clifford_density=
     print(f"Saved {n_samples} circuits to {RAW_DIR}")
 
 if __name__ == "__main__":
-    generate_and_save(n_samples=200, n_qubits=4, depth=50, non_clifford_density=0.25)
+    generate_and_save(n_samples=1000, n_qubits=4, depth=50, non_clifford_density=0.25)
