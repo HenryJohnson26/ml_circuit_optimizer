@@ -38,6 +38,8 @@ or
 
 then install required packages with pip, or whatever you use
      pip install -r requirements.txt
+You may have to create a temporary folder to install all of the packages since they are large.
+    TMPDIR=/path/to/temp/folder pip install -r requirements.txt
 
 You can generate data with
 *from root directory*
