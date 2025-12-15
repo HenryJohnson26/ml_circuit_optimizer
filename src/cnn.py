@@ -1,12 +1,4 @@
 # cnn.py
-"""
-Fixed CNN training script that:
- - Predicts full tokens (gate_id, q1, q2)
- - Uses a differentiable PyTorch statevector simulator for a fidelity penalty
- - Keeps structural penalty and training loop style
- - Infers n_qubits from data; maps q2=-1 -> NO_Q_IDX in BOTH X and Y
-"""
-
 import json
 import random
 from pathlib import Path
@@ -21,13 +13,13 @@ from torch.utils.data import DataLoader, TensorDataset
 # Config
 # ----------------------------
 DATA_DIR = "data/tokenized"
-WINDOW = 16  # Reduced from 32 - shorter context is easier to learn
-BATCH_SIZE = 64  # Increased for more stable gradients
-EPOCHS = 50  # More epochs to learn
-EMBED_DIM = 64  # Increased capacity
+WINDOW = 16
+BATCH_SIZE = 64
+EPOCHS = 50
+EMBED_DIM = 64
 Q_EMBED = 16
-HIDDEN_DIM = 256  # Increased capacity
-LR = 5e-4  # Reduced learning rate
+HIDDEN_DIM = 256
+LR = 5e-4
 TRAINING_SPLIT = 0.8
 
 if torch.cuda.is_available():
@@ -37,20 +29,18 @@ else:
     print("Using cpu")
     DEVICE = torch.device("cpu")
 
-# gates in your vocab
+# gates
 GATE_VOCAB = [
     "h", "s", "sdg", "x", "y", "z", "t", "tdg", "rz_pi_4",
     "cx", "cz"
 ]
 
 # token indices of non-Cliffords (t=6, tdg=7, rz_pi_4=8)
-# Note: S and Sdg ARE Clifford gates
 NONCLIFFORD_GATES = [6, 7, 8]  # t, tdg, rz_pi_4
 
 # Fidelity penalty config (differentiable)
-LAMBDA_FID = 0.5  # Increased to make fidelity more important
-SAMPLE_FRACTION_FOR_FID = 0.2  # Sample more for better gradient signal
-
+LAMBDA_FID = 0.5
+SAMPLE_FRACTION_FOR_FID = 0.2
 SEED = 42
 random.seed(SEED)
 np.random.seed(SEED)
@@ -264,7 +254,7 @@ ce_loss = nn.CrossEntropyLoss()
 # Differentiable PyTorch simulator helpers
 # ----------------------------
 def get_single_qubit_matrices(device):
-    dtype = torch.complex64  # Use complex64 for better compatibility
+    dtype = torch.complex64
     I = torch.tensor([[1, 0], [0, 1]], dtype=dtype, device=device)
     X = torch.tensor([[0, 1], [1, 0]], dtype=dtype, device=device)
     Y = torch.tensor([[0, -1j], [1j, 0]], dtype=dtype, device=device)
