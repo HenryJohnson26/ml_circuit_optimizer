@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader, TensorDataset
 DATA_DIR = "data/tokenized"
 WINDOW = 16
 BATCH_SIZE = 64
-EPOCHS = 50
+EPOCHS = 100
 EMBED_DIM = 64
 Q_EMBED = 16
 HIDDEN_DIM = 256
@@ -39,7 +39,7 @@ GATE_VOCAB = [
 NONCLIFFORD_GATES = [6, 7, 8]  # t, tdg, rz_pi_4
 
 # Fidelity penalty config (differentiable)
-LAMBDA_FID = 0.5
+LAMBDA_FID = 1
 SAMPLE_FRACTION_FOR_FID = 0.2
 SEED = 42
 random.seed(SEED)
@@ -600,7 +600,7 @@ def train():
 
             # Add structural penalty
             struct_pen = structural_penalty(gate_logits)
-            loss = loss + 0.2 * struct_pen  # Increased weight
+            loss = loss + 0.1 * struct_pen  # Increased weight
 
             # Differentiable fidelity penalty
             fid_pen = fidelity_penalty_differentiable(batch_x, batch_y, gate_logits, q1_logits, q2_logits, sample_frac=SAMPLE_FRACTION_FOR_FID)
